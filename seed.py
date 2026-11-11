@@ -5,30 +5,34 @@ import aiosqlite
 from database import DATABASE_NAME, init_db
 
 
-DATA_BUKU = [
+data_buku = [
     ("Laskar Pelangi", "Andrea Hirata", "Novel", 85000, 20),
-    ("Bumi", "Tere Liye", "Fantasi", 95000, 15),
-    ("Laut Bercerita", "Leila S. Chudori", "Novel", 100000, 10),
-    ("Filosofi Teras", "Henry Manampiring", "Pengembangan Diri", 89000, 12),
-    ("Atomic Habits", "James Clear", "Pengembangan Diri", 120000, 18),
-    ("Negeri 5 Menara", "Ahmad Fuadi", "Novel", 80000, 14),
-    ("Pulang", "Tere Liye", "Novel", 90000, 11),
-    ("Dilan 1990", "Pidi Baiq", "Romansa", 75000, 16),
-    ("Bumi Manusia", "Pramoedya Ananta Toer", "Sejarah", 110000, 9),
-    ("Perahu Kertas", "Dee Lestari", "Romansa", 85000, 13),
+    ("Bumi", "Tere Liye", "Fantasi", 90000, 15),
+    ("Laut Bercerita", "Leila S. Chudori", "Novel", 95000, 12),
+    ("Filosofi Teras", "Henry Manampiring", "Nonfiksi", 98000, 18),
+    ("Atomic Habits", "James Clear", "Pengembangan Diri", 110000, 25),
+    ("Negeri 5 Menara", "Ahmad Fuadi", "Novel", 88000, 20),
+    ("Pulang", "Tere Liye", "Novel", 92000, 15),
+    ("Dilan 1990", "Pidi Baiq", "Romantis", 75000, 10),
+    ("Bumi Manusia", "Pramoedya Ananta Toer", "Sejarah", 100000, 14),
+    ("Perahu Kertas", "Dee Lestari", "Romantis", 85000, 16)
 ]
 
 
-async def seed_database():
+async def seed():
     await init_db()
 
     async with aiosqlite.connect(DATABASE_NAME) as db:
+        await db.execute("DELETE FROM transactions")
+        await db.execute("DELETE FROM buku")
+
         await db.executemany(
             """
-            INSERT INTO buku (judul, penulis, kategori, harga, stok)
+            INSERT INTO buku
+            (judul, penulis, kategori, harga, stok)
             VALUES (?, ?, ?, ?, ?)
             """,
-            DATA_BUKU
+            data_buku
         )
 
         await db.commit()
@@ -37,4 +41,4 @@ async def seed_database():
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_database())
+    asyncio.run(seed())

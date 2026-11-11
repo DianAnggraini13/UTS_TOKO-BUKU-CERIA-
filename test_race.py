@@ -4,55 +4,59 @@ import httpx
 
 
 BASE_URL = "http://127.0.0.1:8000"
-ITEM_ID = 1
 
 
-async def kirim_transaksi(client):
+async def kirim_transaksi(client, nama):
     response = await client.post(
-        BASE_URL + "/transactions",
+        f"{BASE_URL}/transactions/",
         json={
-            "item_id": ITEM_ID,
-            "qty": 1
+            "buku_id": 1,
+            "jumlah": 1
         }
     )
 
+    print(f"{nama}:")
     print("Status:", response.status_code)
-    print("Respons:", response.text)
+    print("Respons:", response.json())
+
+    return response.json()
 
 
-async def test_race():
+async def main():
     async with httpx.AsyncClient() as client:
 
-        print("Mengirim dua transaksi bersamaan...")
+        # Mengatur stok buku ID 1 menjadi 1
+        await client.put(
+            f"{BASE_URL}/buku/1",
+            json={"stok": 1}
+        )
+
+        print("Mengirim dua transaksi secara bersamaan...\n")
 
         await asyncio.gather(
-            kirim_transaksi(client),
-            kirim_transaksi(client)
+            kirim_transaksi(client, "Transaksi 1"),
+            kirim_transaksi(client, "Transaksi 2")
         )
 
-        print("Menunggu proses transaksi...")
+        print("\nMenunggu proses transaksi...")
         await asyncio.sleep(5)
 
+        # Memeriksa stok akhir
         response = await client.get(
-            BASE_URL + "/buku/" + str(ITEM_ID)
+            f"{BASE_URL}/buku/1"
         )
 
-        if response.status_code != 200:
-            print("Gagal mengambil data buku.")
-            print(response.text)
-            return
+        print("\nStok akhir buku:")
+        print(response.json())
 
-        buku = response.json()
+        # Memeriksa status transaksi
+        response = await client.get(
+            f"{BASE_URL}/transactions/"
+        )
 
-        print("\n===== HASIL PENGUJIAN =====")
-        print("Judul buku:", buku["judul"])
-        print("Stok akhir:", buku["stok"])
-
-        if buku["stok"] < 0:
-            print("Terjadi overselling!")
-        else:
-            print("Stok tidak negatif.")
+        print("\nRiwayat transaksi:")
+        print(response.json())
 
 
 if __name__ == "__main__":
-    asyncio.run(test_race())
+    asyncio.run(main())

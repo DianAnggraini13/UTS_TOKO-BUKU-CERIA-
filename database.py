@@ -4,15 +4,10 @@ import aiosqlite
 DATABASE_NAME = "buku_ceria.db"
 
 
-async def get_db():
-    async with aiosqlite.connect(DATABASE_NAME) as db:
-        db.row_factory = aiosqlite.Row
-        yield db
-
-
 async def init_db():
     async with aiosqlite.connect(DATABASE_NAME) as db:
 
+        # Membuat tabel buku
         await db.execute("""
             CREATE TABLE IF NOT EXISTS buku (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,15 +19,24 @@ async def init_db():
             )
         """)
 
+        # Membuat tabel transaksi
         await db.execute("""
             CREATE TABLE IF NOT EXISTS transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                item_id INTEGER NOT NULL,
-                qty INTEGER NOT NULL CHECK (qty > 0),
+                buku_id INTEGER NOT NULL,
+                jumlah INTEGER NOT NULL CHECK (jumlah > 0),
                 status TEXT NOT NULL DEFAULT 'pending',
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (item_id) REFERENCES buku(id)
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                error_message TEXT,
+                FOREIGN KEY (buku_id) REFERENCES buku(id)
             )
         """)
 
         await db.commit()
+
+
+async def get_db():
+    async with aiosqlite.connect(DATABASE_NAME) as db:
+        db.row_factory = aiosqlite.Row
+        yield db
