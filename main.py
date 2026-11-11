@@ -8,8 +8,10 @@ from routes.resource import router as resource_router
 from routes.transaction import router as transaction_router
 
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+
     await init_db()
     yield
 
@@ -22,9 +24,9 @@ app = FastAPI(
 )
 
 
-# Registrasi router
 app.include_router(resource_router)
 app.include_router(transaction_router)
+
 
 
 @app.get("/", tags=["Home"])
