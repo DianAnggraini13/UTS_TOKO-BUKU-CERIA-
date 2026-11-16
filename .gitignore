@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+hasil_*_exceptions.csv
+hasil_*_failures.csv
+hasil_*_stats.csv
+hasil_*_stats_history.csv

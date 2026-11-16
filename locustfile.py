@@ -1,18 +1,45 @@
 
+import os
+
 from locust import HttpUser, task, between
+from locust.exception import StopUser
+
+
+# Jenis pengujian: get atau post
+SCENARIO = os.getenv("LOCUST_SCENARIO", "get")
+
+# Jumlah request untuk setiap pengguna
+REQUESTS_PER_USER = int(os.getenv("REQUESTS_PER_USER", "5"))
 
 
 class BukuCeriaUser(HttpUser):
     wait_time = between(1, 3)
 
-    @task(3)
-    def lihat_daftar_buku(self):
-        self.client.get("/buku?skip=0&limit=10")
+    def on_start(self):
+        self.request_count = 0
 
-    @task(2)
-    def lihat_detail_buku(self):
-        self.client.get("/buku/1")
+        if SCENARIO not in ["get", "post"]:
+            raise ValueError("SCENARIO harus get atau post")
 
-    @task(1)
-    def lihat_transaksi(self):
-        self.client.get("/transactions")
+    @task
+    def pengujian_buku_ceria(self):
+        if SCENARIO == "get":
+            self.client.get(
+                "/buku?skip=0&limit=10",
+                name="GET /buku"
+            )
+
+        elif SCENARIO == "post":
+            self.client.post(
+                "/transactions",
+                json={
+                    "buku_id": 1,
+                    "jumlah": 1
+                },
+                name="POST /transactions"
+            )
+
+        self.request_count += 1
+
+        if self.request_count >= REQUESTS_PER_USER:
+            raise StopUser
