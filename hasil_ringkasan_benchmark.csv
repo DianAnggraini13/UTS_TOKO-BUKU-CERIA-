@@ -1,5 +1,0 @@
-Skenario,Worker,Total Waktu (s),Throughput (req/s),Rata-rata Latensi (ms),Total Request,Request Gagal
-GET,1,31.36,9.06,28.07,100,0
-POST,1,31.39,5.07,86.82,50,0
-GET,4,31.21,9.11,18.87,100,0
-POST,4,31.33,4.75,74.52,50,0

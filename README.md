@@ -24,8 +24,6 @@ Aplikasi ini memiliki beberapa fitur utama:
 
 ## 2. Teknologi yang Digunakan
 
-Teknologi dan library yang digunakan dalam pengembangan aplikasi:
-
 | Teknologi | Kegunaan |
 |---|---|
 | Python 3.10+ | Bahasa pemrograman |
@@ -248,7 +246,31 @@ Kondisi `stok >= ?` memastikan pengurangan hanya dilakukan jika jumlah stok menc
 
 ## 9. Pengujian Aplikasi
 
-### A. Pengujian Menggunakan Swagger UI
+### A. Membersihkan Hasil Pengujian Sebelumnya
+
+Sebelum melakukan pengujian ulang, bersihkan file hasil pengujian dalam format CSV agar hasil pengujian terbaru tidak tercampur dengan hasil sebelumnya.
+
+Pastikan terminal berada di folder utama proyek:
+
+```powershell
+cd C:\vscode\BUKU_CERIA
+```
+
+Kemudian jalankan perintah berikut:
+
+```powershell
+Remove-Item .\hasil_*.csv -ErrorAction SilentlyContinue
+```
+
+Perintah tersebut menghapus file CSV yang namanya diawali `hasil_`, seperti file hasil pengujian Locust dan ringkasan benchmark. Perintah ini tidak menghapus file kode pengujian seperti `benchmark.py`, `locustfile.py`, dan `test_race.py`.
+
+Untuk memeriksa file yang masih ada, jalankan:
+
+```powershell
+Get-ChildItem -File
+```
+
+### B. Pengujian Menggunakan Swagger UI
 
 Pengujian endpoint dilakukan melalui Swagger UI:
 
@@ -265,7 +287,7 @@ Langkah pengujian:
 7. Mencoba endpoint POST transaksi.
 8. Memeriksa perubahan status transaksi.
 
-### B. Pengujian Konkurensi
+### C. Pengujian Konkurensi
 
 Pengujian konkurensi dilakukan menggunakan file `test_race.py`.
 
@@ -284,7 +306,7 @@ Hasil pengujian digunakan untuk memeriksa:
 - Apakah sistem menolak transaksi ketika stok tidak mencukupi.
 - Apakah stok akhir tetap berada pada nilai nol atau lebih.
 
-### C. Pengujian Beban Menggunakan Locust
+### D. Pengujian Beban Menggunakan Locust
 
 Locust digunakan untuk menguji kemampuan API dalam menangani banyak permintaan secara bersamaan.
 
@@ -333,7 +355,7 @@ Hasil pengujian dapat dilihat melalui beberapa bagian:
 
 Pengujian ini bertujuan mengetahui kemampuan API dalam menangani permintaan dari pengguna virtual secara bersamaan.
 
-### D. Pengujian Benchmark
+### E. Pengujian Benchmark
 
 Pengujian benchmark dilakukan menggunakan file `benchmark.py` dengan bantuan Locust untuk membandingkan performa aplikasi pada konfigurasi 1 worker dan 4 worker.
 
@@ -394,7 +416,7 @@ Kolom `stok` memiliki batasan agar nilainya tidak kurang dari nol.
 
 Proyek dapat dikelola dan diunggah ke repository GitHub. Pastikan repository sudah dibuat dan folder proyek lokal telah terhubung dengan repository tersebut.
 
-Untuk mengunggah perubahan terbaru, buka terminal pada folder utama proyek, kemudian jalankan perintah berikut secara berurutan:
+Untuk mengunggah perubahan terbaru, buka terminal pada folder utama proyek, kemudian jalankan perintah berikut secara berurutan.
 
 **1. Memeriksa perubahan file**
 
@@ -420,7 +442,16 @@ git commit -m "Update project Toko Buku Ceria API"
 git push origin main
 ```
 
-Pastikan folder `.venv`, file cache Python, dan file sementara tidak ikut diunggah ke repository. File yang tidak perlu diunggah dapat diatur melalui `.gitignore`.
+Pastikan folder `.venv`, file cache Python, file sementara, dan hasil pengujian CSV tidak ikut diunggah ke repository. File yang tidak perlu diunggah dapat diatur melalui `.gitignore`.
+
+Tambahkan aturan berikut ke dalam file `.gitignore`:
+
+```gitignore
+.venv/
+__pycache__/
+*.pyc
+hasil_*.csv
+```
 
 Repository GitHub proyek:
 
